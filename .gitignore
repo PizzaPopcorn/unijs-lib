@@ -1,0 +1,10 @@
+﻿# IDE Cache directories
+.idea/
+.vs/
+.vscode/
+
+# Dependency directories
+node_modules/
+
+# Export folder
+dist/
