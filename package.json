@@ -1,8 +1,12 @@
 {
-  "name": "unityjs",
+  "name": "@pizzapopcorn/unityjs",
   "version": "0.0.2",
+  "description": "Code Unity Web games using Javascript with and advanced interop library.",
+  "license": "MIT",
+  "author": "Andres Urrutia <urrutiac.andres@gmail.com> (https://portfolio.sharpdevmx.com)",
   "type": "module",
   "devDependencies": {
+    "@rollup/plugin-terser": "^0.4.4",
     "rollup": "^4.59.0"
   },
   "scripts": {
