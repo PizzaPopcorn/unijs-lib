@@ -1,6 +1,6 @@
 {
   "name": "unityjs",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "type": "module",
   "devDependencies": {
     "rollup": "^4.59.0"

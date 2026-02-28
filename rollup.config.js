@@ -5,6 +5,7 @@ export default {
     output: {
         name: 'Unity',
         file: `dist/pizzapopcorn-unityjs-${pkg.version}.js`,
-        format: 'umd'
+        format: 'umd',
+        exports: 'default'
     }
 }

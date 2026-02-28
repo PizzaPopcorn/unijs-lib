@@ -1,6 +1,6 @@
 ﻿import { GameObject } from './GameObject';
 
-export class Unity {
+export default class Unity {
     /** @type {typeof GameObject} */
     static GameObject = GameObject;
     static internalLogs = false;
