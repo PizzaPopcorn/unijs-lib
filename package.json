@@ -1,8 +1,26 @@
 {
   "name": "@pizzapopcorn/unityjs",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Code Unity Web games using Javascript with and advanced interop library.",
   "license": "MIT",
+  "keywords": [
+    "unityjs",
+    "unity.js",
+    "unity",
+    "js",
+    "javascript",
+    "interop",
+    "web",
+    "webgl"
+  ],
+  "homepage": "https://github.com/PizzaPopcorn/unityjs-js-lib#readme",
+  "bugs": {
+    "url": "https://github.com/PizzaPopcorn/unityjs-js-lib/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/PizzaPopcorn/unityjs-js-lib.git"
+  },
   "author": "Andres Urrutia <urrutiac.andres@gmail.com> (https://portfolio.sharpdevmx.com)",
   "type": "module",
   "devDependencies": {

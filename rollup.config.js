@@ -5,13 +5,13 @@ export default {
     output: [
         {
             name: 'Unity',
-            file: `dist/unityjs.js`,
+            file: `dist/unity.js`,
             format: 'umd',
             exports: 'default'
         },
         {
             name: 'Unity',
-            file: `dist/unityjs.min.js`,
+            file: `dist/unity.min.js`,
             format: 'umd',
             exports: 'default',
             plugins: [terser()]
