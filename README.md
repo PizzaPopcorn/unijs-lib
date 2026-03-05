@@ -1,7 +1,7 @@
-# Unity JS
+# UniJS - WebGL Interop (Library)
 
 ## Prerequisites
-- Your Unity WebGL build must have the [Unity plugin package](https://github.com/PizzaPopcorn/unityjs-unity-plugin) installed and implemented (instructions provided in the README of that repo).
+- Your Unity WebGL build must have the [Unity plugin package](https://github.com/PizzaPopcorn/unijs) installed and implemented (instructions provided in the README of that repo).
 - If you want to customize the library you need to have [Node.js](https://nodejs.org) installed.
 
 ## Installation
@@ -9,7 +9,7 @@ IMPORTANT: You don't have to clone/fork this repository if you just want to use 
 
 For getting the latest version in your project just paste this line in the html page that will load the Unity instance:
 ```javascript
-<script src="https://cdn.jsdelivr.net/npm/@pizzapopcorn/unityjs/dist/unity.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@pizzapopcorn/unijs/dist/unity.min.js"></script>
 ```
 Now if you want to customize the library you can clone/fork this repository and follow the build steps.
 
