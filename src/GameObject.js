@@ -84,7 +84,6 @@
     }
 
     InvokeMethod(methodName, paramType = "", paramValue = "") {
-        const { Unity } = require('./Unity');
         paramType = Unity.types[paramType] || paramType;
         this?.#invokeGameObjectEvent("gameObject.invokeMethod", { methodName: methodName, parameterType: paramType, parameterValue: paramValue });
     }
@@ -131,11 +130,10 @@
         if(typeof payload === "object") payloadJson = JSON.stringify(payload);
         else if(typeof payload !== "string") payloadJson = payload.toString();
         const eventPayload = { eventName: eventName, hierarchyPath: this.hierarchyPath, payloadJson: payloadJson, listenDisabled: true };
-
-        const { Unity } = require('./Unity');
+        
         const response = Unity.InvokeEvent(`GOEvent:${this.key}`, JSON.stringify(eventPayload));
 
-        console.log(`Invoked Event: GOEvent:${this.key}`, eventPayload);
+        if(Unity.internalLogs) console.log(`Invoked Event: GOEvent:${this.key}`, eventPayload);
 
         if(response === null || !response.hasOwnProperty("ok")){
             console.error(`Invalid JSON response from GameObject event callback: ${response}`);
