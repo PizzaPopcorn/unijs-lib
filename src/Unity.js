@@ -27,6 +27,11 @@ export default class Unity {
     static #onInstanceReadyListeners = new Set();
     static #onEventListeners = {};
 
+    /**
+     * Loads the Unity canvas from the specified URL and injects it into the specified element.
+     * @param {string} url 
+     * @param {string} elementId 
+     */
     static LoadInstance(url, elementId) {
         Unity.#instanceReady = false;
         const r = new XMLHttpRequest();
@@ -49,10 +54,29 @@ export default class Unity {
         r.send();
     }
 
+    /**
+     * Gets the current Unity version.
+     * @returns {string}
+     */
+    static GetVersion() {
+        return Unity.InvokeEvent("InstanceEvent:GetUnityVersion");
+    }
+    
+    /**
+     * Gets the current build version.
+     * @returns {string}
+     */
     static GetBuildVersion() {
         return Unity.InvokeEvent("InstanceEvent:GetBuildVersion");
     }
 
+    /**
+     * Invokes a global event that can be listened to by both Unity and JS.
+     * An optional payload can be sent, and the event can also return anything.
+     * @param {string} eventName
+     * @param {any} payload
+     * @returns {any}
+     */
     static InvokeEvent(eventName, payload = undefined) {
         const responseJson = Unity.#invokeEventInternal(eventName, payload);
         try {
@@ -70,6 +94,13 @@ export default class Unity {
         }
     }
 
+    /**
+     * Async version of InvokeEvent. Invokes a global async event that can be listened to by both Unity and JS.
+     * An optional payload can be sent, and the event can also return anything.
+     * @param {string} eventName
+     * @param {any} payload
+     * @returns {Promise<any>}
+     */
     static async InvokeEventAsync(eventName, payload = undefined) {
         return new Promise(resolve => {
             const responseJson = Unity.#invokeEventInternal(eventName, payload);
@@ -90,6 +121,10 @@ export default class Unity {
         })
     }
 
+    /**
+     * Awaits the Unity WaitForEndOfFrame coroutine.
+     * @returns {Promise<void>}
+     */
     static async WaitForEndOfFrameAsync() {
         return new Promise((resolve) => {
             const eventId = crypto.randomUUID().toString();
@@ -104,10 +139,56 @@ export default class Unity {
         });
     }
 
+    /**
+     * Loads a scene and awaits its completion.
+     * @param {string} sceneName
+     * @returns {Promise<void>}
+     */
+    static async LoadSceneAsync(sceneName) {
+        return new Promise((resolve) => {
+            const eventName = `SceneLoadedEvent:${sceneName}`;
+            Unity.onEvent(eventName, () => {
+                resolve();
+                delete Unity.#onEventListeners[eventName];
+            });
+            
+            Unity.InvokeEvent("InstanceEvent:LoadScene", sceneName);
+        });
+    }
+
+    /**
+     * Returns true if a scene is currently loading.
+     * @returns {boolean}
+     */
+    static IsSceneLoading() {
+        return Unity.InvokeEvent("InstanceEvent:IsSceneLoading");
+    }
+
+    /**
+     * Returns the current scene load progress. If no scene is currently loading, it returns 0.
+     * @returns {number}
+     */
+    static GetSceneLoadProgress() {
+        return Unity.InvokeEvent("InstanceEvent:GetSceneLoadProgress");
+    }
+
+    /**
+     * Loads an asset bundle from the provided URL and awaits its completion.
+     * @param {string} bundleUrl
+     * @returns {Promise<void>}
+     */
     static async LoadBundleAsync(bundleUrl) {
         await Unity.InvokeEventAsync("InstanceEvent:LoadBundle", bundleUrl);
     }
 
+    /**
+     * This function loads the bundle, instantiates a prefab from it, and then unloads the bundle so you don't have to handle it manually.
+     * An optional parent JS Key can be provided to place the instantiated prefab under a specific GameObject.
+     * @param {string} bundleUrl
+     * @param {string} prefabName
+     * @param {string} parentKey
+     * @returns {Promise<void>}
+     */
     static async InstantiatePrefabFromBundleAsync(bundleUrl, prefabName, parentKey = "") {
         await Unity.InvokeEventAsync("InstanceEvent:InstantiatePrefabFromBundle", {
             bundleUrl: bundleUrl,
@@ -118,6 +199,10 @@ export default class Unity {
 
     // Listeners -----------------------------
 
+    /**
+     * Registers a callback that will be invoked when the Unity instance is ready.
+     * @param {function} callback
+     */
     static onInstanceReady(callback) {
         if(!Unity.#instanceReady) {
             Unity.#onInstanceReadyListeners.add(callback);
@@ -127,6 +212,11 @@ export default class Unity {
         }
     }
 
+    /**
+     * Registers a callback that will be invoked when a global event is received. It can listen to events from both Unity and JS.
+     * @param {string} eventName
+     * @param {function} callback
+     */
     static onEvent(eventName, callback) {
         if(!Unity.#onEventListeners.hasOwnProperty(eventName)) {
             Unity.#onEventListeners[eventName] = new Set();
@@ -134,6 +224,11 @@ export default class Unity {
         Unity.#onEventListeners[eventName].add(callback);
     }
 
+    /**
+     * Unregisters a callback previously registered with onEvent.
+     * @param {string} eventName
+     * @param {function} callback
+     */
     static offEvent(eventName, callback) {
         if(!Unity.#onEventListeners.hasOwnProperty(eventName)) return;
         Unity.#onEventListeners[eventName].delete(callback);

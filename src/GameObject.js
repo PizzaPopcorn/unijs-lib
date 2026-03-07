@@ -9,6 +9,12 @@
         destroy: {}
     }
 
+    /**
+     * Gets a GameObject by its JS Key (previously set in Unity using the JSKeyGameObject component).
+     * @param {string} key
+     * @returns {GameObject | null}
+     * @constructor
+     */
     static GetKeyGameObject(key){
         if(!GameObject.keyGameObjects.hasOwnProperty(key)) {
             console.error(`GameObject with key '${key}' not found`);
@@ -17,6 +23,11 @@
         return GameObject.keyGameObjects[key];
     }
 
+    /**
+     * Registers a callback for a GameObject's Awake event using its JS Key. If the GameObject doesn't exist yet, it will trigger when it's created.
+     * @param {string} key
+     * @param {function} callback
+     */
     static onAwake(key, callback){
         if(!GameObject.#lifeCycleCallbacks.awake.hasOwnProperty(key)) {
             GameObject.#lifeCycleCallbacks.awake[key] = new Set();
@@ -24,6 +35,11 @@
         GameObject.#lifeCycleCallbacks.awake[key].add(callback);
     }
 
+    /**
+     * Registers a callback for a GameObject's Start event using its JS Key. If the GameObject doesn't exist yet, it will trigger when it's created.
+     * @param {string} key
+     * @param {function} callback
+     */
     static onStart(key, callback) {
         if(!GameObject.#lifeCycleCallbacks.start.hasOwnProperty(key)) {
             GameObject.#lifeCycleCallbacks.start[key] = new Set();
@@ -31,6 +47,11 @@
         GameObject.#lifeCycleCallbacks.start[key].add(callback);
     }
 
+    /**
+     * Registers a callback for a GameObject's OnEnable event using its JS Key. If the GameObject doesn't exist yet, it will trigger when it's created.
+     * @param {string} key
+     * @param {function} callback
+     */
     static onEnable(key, callback) {
         if(!GameObject.#lifeCycleCallbacks.enable.hasOwnProperty(key)) {
             GameObject.#lifeCycleCallbacks.enable[key] = new Set();
@@ -38,6 +59,11 @@
         GameObject.#lifeCycleCallbacks.enable[key].add(callback);
     }
 
+    /**
+     * Registers a callback for a GameObject's OnDisable event using its JS Key. If the GameObject doesn't exist yet, it will trigger when it's created and then disabled.
+     * @param {string} key
+     * @param {function} callback
+     */
     static onDisable(key, callback) {
         if(!GameObject.#lifeCycleCallbacks.disable.hasOwnProperty(key)) {
             GameObject.#lifeCycleCallbacks.disable[key] = new Set();
@@ -45,6 +71,11 @@
         GameObject.#lifeCycleCallbacks.disable[key].add(callback);
     }
 
+    /**
+     * Registers a callback for a GameObject's Destroy event using its JS Key. If the GameObject doesn't exist yet, it will trigger when it's created and then destroyed.
+     * @param {string} key
+     * @param {function} callback
+     */
     static onDestroy(key, callback) {
         if(!GameObject.#lifeCycleCallbacks.destroy.hasOwnProperty(key)) {
             GameObject.#lifeCycleCallbacks.destroy[key] = new Set();
@@ -79,15 +110,31 @@
         this.hierarchyPath = data.hasOwnProperty("hierarchyPath") ? data.hierarchyPath : "";
     }
 
+    /** 
+     * Sets the GameObject's active state.
+     * @param {boolean} active
+     */
     SetActive(active) {
         this?.#invokeGameObjectEvent("gameObject.setActive", active);
     }
 
+    /**
+     * Invokes a method on the GameObject via SendMessage. Use GameObject.types for type options.
+     * <br>In order for it to work with custom types, you need to get the fully qualified name of the type.
+     * @param {string} methodName 
+     * @param {string} paramType 
+     * @param {string} paramValue 
+     */
     InvokeMethod(methodName, paramType = "", paramValue = "") {
         paramType = Unity.types[paramType] || paramType;
         this?.#invokeGameObjectEvent("gameObject.invokeMethod", { methodName: methodName, parameterType: paramType, parameterValue: paramValue });
     }
 
+    /**
+     * Gets a child GameObject by index or name.
+     * @param {number | string} query 
+     * @returns {GameObject | null}
+     */
     GetChild(query) {
         const eventName = typeof query === "string" ? "gameObject.findChild" : "gameObject.getChild";
         const childData = this?.#invokeGameObjectEvent(eventName, query);
@@ -99,26 +146,57 @@
         return null;
     }
 
+    /** 
+     * Translates the GameObject's position by the specified amount on each axis.
+     * @param {number} x
+     * @param {number} y
+     * @param {number} z
+     */
     Translate(x, y, z) {
         this?.#invokeGameObjectEvent("transform.translate", { x: x, y: y, z: z });
     }
 
+    /**
+     * Rotates the GameObject around its local axis by the specified amount in degrees.
+     * @param {number} x
+     * @param {number} y
+     * @param {number} z
+     */
     Rotate(x, y, z) {
         this?.#invokeGameObjectEvent("transform.rotate", { x: x, y: y, z: z });
     }
 
+    /**
+     * Sets the GameObject's local scale to the specified values.
+     * @param {number} x
+     * @param {number} y
+     * @param {number} z
+     */
     SetLocalScale(x, y, z) {
         this?.#invokeGameObjectEvent("transform.setLocalScale", { x: x, y: y, z: z });
     }
 
+    /**
+     * Sets the GameObject's local position to the specified values.
+     * @param {number} x
+     * @param {number} y
+     * @param {number} z
+     */
     SetLocalPosition(x, y, z) {
         this?.#invokeGameObjectEvent("transform.setLocalPosition", { x: x, y: y, z: z });
     }
 
+    /**
+     * Looks for a text component and sets its text to the specified value. It works with Legacy, TextMeshPro, and TextMesh components.
+     * @param {string} text
+     */
     SetText(text) {
         this?.#invokeGameObjectEvent("text.setText", text);
     }
 
+    /**
+     * Destroys the GameObject.
+     */
     Destroy() {
         this?.#invokeGameObjectEvent("gameObject.destroy", "");
     }

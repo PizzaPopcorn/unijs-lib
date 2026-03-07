@@ -1,6 +1,6 @@
 {
   "name": "@pizzapopcorn/unijs",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "A seamless interop layer to control Unity WebGL builds from the browser's JavaScript context.",
   "license": "MIT",
   "keywords": [
