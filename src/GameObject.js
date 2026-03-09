@@ -83,10 +83,12 @@
         GameObject.#lifeCycleCallbacks.destroy[key].add(callback);
     }
 
+    /**Only for unity js library use*/
     static _register(key, data) {
         GameObject.keyGameObjects[key] = new GameObject(key, data);
     }
 
+    /**Only for unity js library use*/
     static _receiveLifeCycleEvent(key, event) {
         const gameObject = GameObject.keyGameObjects[key];
         if(!gameObject) return;
