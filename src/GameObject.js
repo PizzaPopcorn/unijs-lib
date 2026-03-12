@@ -1,9 +1,13 @@
-﻿export class GameObject {
+﻿import { Transform } from './Transform';
+import { RigidBody } from './RigidBody';
+
+export class GameObject {
 
     static keyGameObjects = {};
     static #lifeCycleCallbacks = {
         awake: {},
         start: {},
+        update: {},
         enable: {},
         disable: {},
         destroy: {}
@@ -45,6 +49,18 @@
             GameObject.#lifeCycleCallbacks.start[key] = new Set();
         }
         GameObject.#lifeCycleCallbacks.start[key].add(callback);
+    }
+    
+    /**
+     * Registers a callback for a GameObject's Update event using its JS Key. If the GameObject doesn't exist yet, it will trigger when it's created.
+     * @param {string} key
+     * @param {function} callback
+     */
+    static onUpdate(key, callback) {
+        if(!GameObject.#lifeCycleCallbacks.update.hasOwnProperty(key)) {
+            GameObject.#lifeCycleCallbacks.update[key] = new Set();
+        }
+        GameObject.#lifeCycleCallbacks.update[key].add(callback);
     }
 
     /**
@@ -100,7 +116,6 @@
             }
         }
         if(event === "destroy") {
-            gameObject.transform = null;
             delete GameObject.keyGameObjects[key];
         }
     }
@@ -108,8 +123,31 @@
     constructor(key, data) {
         this.key = key;
         this.name = data.name;
-        this.transform = data.transform;
         this.hierarchyPath = data.hasOwnProperty("hierarchyPath") ? data.hierarchyPath : "";
+    }
+    
+    /**
+     * Gets the Transform component of the GameObject.
+     * @returns {Transform | null}
+     */
+    get transform() {
+        const transformData = this._invokeGameObjectEvent("gameObject.getTransform", "");
+        if(transformData) {
+            return new Transform(this, transformData);
+        }
+        return null;
+    }
+
+    /**
+     * Gets the RigidBody component of the GameObject.
+     * @returns {RigidBody | null}
+     */
+    get rigidbody() {
+        const rbData = this._invokeGameObjectEvent("physics.getRigidBody", "");
+        if(rbData) {
+            return new RigidBody(this, rbData);
+        }
+        return null;
     }
 
     /** 
@@ -117,7 +155,7 @@
      * @param {boolean} active
      */
     SetActive(active) {
-        this?.#invokeGameObjectEvent("gameObject.setActive", active);
+        this?._invokeGameObjectEvent("gameObject.setActive", active);
     }
 
     /**
@@ -129,7 +167,7 @@
      */
     InvokeMethod(methodName, paramType = "", paramValue = "") {
         paramType = Unity.types[paramType] || paramType;
-        this?.#invokeGameObjectEvent("gameObject.invokeMethod", { methodName: methodName, parameterType: paramType, parameterValue: paramValue });
+        this?._invokeGameObjectEvent("gameObject.invokeMethod", { methodName: methodName, parameterType: paramType, parameterValue: paramValue });
     }
 
     /**
@@ -139,7 +177,7 @@
      */
     GetChild(query) {
         const eventName = typeof query === "string" ? "gameObject.findChild" : "gameObject.getChild";
-        const childData = this?.#invokeGameObjectEvent(eventName, query);
+        const childData = this?._invokeGameObjectEvent(eventName, query);
         if(childData !== null) {
             const currentPath = this.hierarchyPath === "" ? this.key : this.hierarchyPath;
             childData.hierarchyPath = currentPath + "/" + childData.name;
@@ -148,64 +186,23 @@
         return null;
     }
 
-    /** 
-     * Translates the GameObject's position by the specified amount on each axis.
-     * @param {number} x
-     * @param {number} y
-     * @param {number} z
-     */
-    Translate(x, y, z) {
-        this?.#invokeGameObjectEvent("transform.translate", { x: x, y: y, z: z });
-    }
-
-    /**
-     * Rotates the GameObject around its local axis by the specified amount in degrees.
-     * @param {number} x
-     * @param {number} y
-     * @param {number} z
-     */
-    Rotate(x, y, z) {
-        this?.#invokeGameObjectEvent("transform.rotate", { x: x, y: y, z: z });
-    }
-
-    /**
-     * Sets the GameObject's local scale to the specified values.
-     * @param {number} x
-     * @param {number} y
-     * @param {number} z
-     */
-    SetLocalScale(x, y, z) {
-        this?.#invokeGameObjectEvent("transform.setLocalScale", { x: x, y: y, z: z });
-    }
-
-    /**
-     * Sets the GameObject's local position to the specified values.
-     * @param {number} x
-     * @param {number} y
-     * @param {number} z
-     */
-    SetLocalPosition(x, y, z) {
-        this?.#invokeGameObjectEvent("transform.setLocalPosition", { x: x, y: y, z: z });
-    }
-
     /**
      * Looks for a text component and sets its text to the specified value. It works with Legacy, TextMeshPro, and TextMesh components.
      * @param {string} text
      */
     SetText(text) {
-        this?.#invokeGameObjectEvent("text.setText", text);
+        this?._invokeGameObjectEvent("text.setText", text);
     }
 
     /**
      * Destroys the GameObject.
      */
     Destroy() {
-        this?.#invokeGameObjectEvent("gameObject.destroy", "");
+        this?._invokeGameObjectEvent("gameObject.destroy", "");
     }
 
-    #invokeGameObjectEvent(eventName, payload) {
-        if(!this.transform) return null;
-
+    /**Only for internal library use*/
+    _invokeGameObjectEvent(eventName, payload) {
         let payloadJson = payload;
         if(typeof payload === "object") payloadJson = JSON.stringify(payload);
         else if(typeof payload !== "string") payloadJson = payload.toString();
