@@ -1,9 +1,5 @@
-﻿export class RigidBody {
-    #cache = null;
-
-    /**
-     * @param {GameObject} gameObject
-     */
+﻿export class Rigidbody {
+    
     constructor(gameObject) {
         this.gameObject = gameObject;
 
@@ -17,21 +13,11 @@
         });
     }
 
-    /**@internal*/
-    _setCache(data) {
-        this.#cache = data;
-        // The cache is cleared in the next microtask to ensure it's "live" but efficient during a single execution tick.
-        Promise.resolve().then(() => {
-            this.#cache = null;
-        });
-    }
-
     /**
      * Gets the mass of the RigidBody.
      * @returns {number}
      */
     get mass() {
-        if (this.#cache && this.#cache.hasOwnProperty("mass")) return this.#cache.mass;
         return this.#tryInvokeGameObjectEvent("physics.getMass", "");
     }
 
@@ -40,7 +26,6 @@
      * @returns {boolean}
      */
     get useGravity() {
-        if (this.#cache && this.#cache.hasOwnProperty("useGravity")) return this.#cache.useGravity;
         return this.#tryInvokeGameObjectEvent("physics.getUseGravity", "");
     }
 
@@ -49,7 +34,6 @@
      * @returns {boolean}
      */
     get isKinematic() {
-        if (this.#cache && this.#cache.hasOwnProperty("isKinematic")) return this.#cache.isKinematic;
         return this.#tryInvokeGameObjectEvent("physics.getIsKinematic", "");
     }
 
@@ -58,7 +42,6 @@
      * @returns {number}
      */
     get linearDamping() {
-        if (this.#cache && this.#cache.hasOwnProperty("linearDamping")) return this.#cache.linearDamping;
         return this.#tryInvokeGameObjectEvent("physics.getLinearDamping", "");
     }
 
@@ -67,17 +50,7 @@
      * @returns {number}
      */
     get angularDamping() {
-        if (this.#cache && this.#cache.hasOwnProperty("angularDamping")) return this.#cache.angularDamping;
         return this.#tryInvokeGameObjectEvent("physics.getAngularDamping", "");
-    }
-
-    /**
-     * Returns a plain object with all rigidbody properties.
-     * @returns {object}
-     */
-    toJSON() {
-        if (this.#cache) return this.#cache;
-        return this.gameObject._invokeGameObjectEvent("physics.getRigidBody", "");
     }
 
     /**

@@ -1,9 +1,5 @@
 ﻿export class Transform {
-    #cache = null;
-
-    /**
-     * @param {GameObject} gameObject
-     */
+    
     constructor(gameObject) {
         this.gameObject = gameObject;
 
@@ -15,21 +11,11 @@
         });
     }
 
-    /**@internal*/
-    _setCache(data) {
-        this.#cache = data;
-        // The cache is cleared in the next microtask to ensure it's "live" but efficient during a single execution tick.
-        Promise.resolve().then(() => {
-            this.#cache = null;
-        });
-    }
-
     /**
      * Gets the GameObject's local position.
      * @returns {object}
      */
     get position() {
-        if (this.#cache && this.#cache.hasOwnProperty("position")) return this.#cache.position;
         return this.#tryInvokeGameObjectEvent("transform.getPosition", "");
     }
 
@@ -38,7 +24,6 @@
      * @returns {object}
      */
     get rotation() {
-        if (this.#cache && this.#cache.hasOwnProperty("rotation")) return this.#cache.rotation;
         return this.#tryInvokeGameObjectEvent("transform.getRotation", "");
     }
 
@@ -47,17 +32,7 @@
      * @returns {object}
      */
     get localScale() {
-        if (this.#cache && this.#cache.hasOwnProperty("localScale")) return this.#cache.localScale;
         return this.#tryInvokeGameObjectEvent("transform.getLocalScale", "");
-    }
-
-    /**
-     * Returns a plain object with all transform properties.
-     * @returns {object}
-     */
-    toJSON() {
-        if (this.#cache) return this.#cache;
-        return this.gameObject._invokeGameObjectEvent("gameObject.getTransform", "");
     }
 
     /** 

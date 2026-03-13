@@ -1,5 +1,5 @@
 ﻿import { Transform } from './Transform';
-import { RigidBody } from './RigidBody';
+import { Rigidbody } from './Rigidbody.js';
 
 export class GameObject {
     #transform = null;
@@ -125,6 +125,10 @@ export class GameObject {
     constructor(key, data) {
         this.key = key;
         this.name = data.name;
+        this.#transform = new Transform(this);
+        if(data.hasRigidbody) {
+            this.#rigidbody = new Rigidbody(this);
+        }
         this.hierarchyPath = data.hasOwnProperty("hierarchyPath") ? data.hierarchyPath : "";
     }
     
@@ -133,23 +137,19 @@ export class GameObject {
      * @returns {Transform | null}
      */
     get transform() {
-        if(!this.#transform) this.#transform = new Transform(this);
-        const transformData = this._invokeGameObjectEvent("gameObject.getTransform", "");
-        if(transformData) {
-            this.#transform._setCache(transformData);
-        }
+        // A GameObject HAS to have a transform
         return this.#transform;
     }
 
     /**
      * Gets the RigidBody component of the GameObject.
-     * @returns {RigidBody | null}
+     * @returns {Rigidbody | null}
      */
     get rigidbody() {
-        const rbData = this._invokeGameObjectEvent("physics.getRigidBody", "");
-        if(rbData) {
-            if(!this.#rigidbody) this.#rigidbody = new RigidBody(this);
-            this.#rigidbody._setCache(rbData);
+        if(this.#rigidbody) return this.#rigidbody;
+        const hasRigidbody = this._invokeGameObjectEvent("gameObject.hasComponent", "rigidbody");
+        if(hasRigidbody) {
+            this.#rigidbody = new Rigidbody(this);
             return this.#rigidbody;
         }
         return null;
