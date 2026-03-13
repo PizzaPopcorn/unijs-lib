@@ -2,6 +2,8 @@
 import { RigidBody } from './RigidBody';
 
 export class GameObject {
+    #transform = null;
+    #rigidbody = null;
 
     static keyGameObjects = {};
     static #lifeCycleCallbacks = {
@@ -131,11 +133,12 @@ export class GameObject {
      * @returns {Transform | null}
      */
     get transform() {
+        if(!this.#transform) this.#transform = new Transform(this);
         const transformData = this._invokeGameObjectEvent("gameObject.getTransform", "");
         if(transformData) {
-            return new Transform(this, transformData);
+            this.#transform._setCache(transformData);
         }
-        return null;
+        return this.#transform;
     }
 
     /**
@@ -145,7 +148,9 @@ export class GameObject {
     get rigidbody() {
         const rbData = this._invokeGameObjectEvent("physics.getRigidBody", "");
         if(rbData) {
-            return new RigidBody(this, rbData);
+            if(!this.#rigidbody) this.#rigidbody = new RigidBody(this);
+            this.#rigidbody._setCache(rbData);
+            return this.#rigidbody;
         }
         return null;
     }
