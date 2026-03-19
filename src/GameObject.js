@@ -1,5 +1,5 @@
 ﻿import { Transform } from './Transform';
-import { Rigidbody } from './Rigidbody.js';
+import { Rigidbody } from './Rigidbody';
 
 export class GameObject {
     #transform = null;
@@ -27,6 +27,24 @@ export class GameObject {
             return null;
         }
         return GameObject.keyGameObjects[key];
+    }
+    
+    /**
+     * Instantiates a prefab at the specified position and rotation either in world space or relative to a parent GameObject.
+     * @param {string} prefabPath - The path to the prefab to instantiate from a Resources folder.
+     * @param {Object} position - The position to instantiate the prefab at (Defaults to Vector3.Zero).
+     * @param {Object} rotation - The rotation to instantiate the prefab with (Defaults to Quaternion.Identity).
+     * @param {GameObject | Transform | null} parent - The parent GameObject to instantiate the prefab relative to (Defaults to null).
+     */
+    static Instantiate(prefabPath, position = { x: 0, y: 0, z: 0 }, rotation = { x: 0, y: 0, z: 0, w: 1 }, parent = null) {
+        if(parent === null){
+            Unity.InvokeEvent("InstanceEvent:InstantiateGameObject", { prefabPath: prefabPath, position: position, rotation: rotation });
+        }
+        else {
+            const p = parent instanceof GameObject ? parent : parent instanceof Transform ? parent.gameObject : null;
+            if(p === null) return;
+            p.Instantiate(prefabPath, position, rotation);
+        }
     }
 
     /**
@@ -204,6 +222,16 @@ export class GameObject {
      */
     Destroy() {
         this?._invokeGameObjectEvent("gameObject.destroy", "");
+    }
+    
+    /**
+     * Instantiates a prefab at the specified position and rotation relative to this GameObject's transform.
+     * @param {string} prefabPath - The path to the prefab to instantiate from a Resources folder.
+     * @param {Object} position - The position to instantiate the prefab at (Defaults to Vector3.Zero).
+     * @param {Object} rotation - The rotation to instantiate the prefab with (Defaults to Quaternion.Identity).
+     */
+    Instantiate(prefabPath, position = { x: 0, y: 0, z: 0 }, rotation = { x: 0, y: 0, z: 0, w: 1 }) {
+        this?._invokeGameObjectEvent("gameObject.instantiate", { prefabPath: prefabPath, position: position, rotation: rotation });
     }
 
     /**Only for internal library use*/

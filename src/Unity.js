@@ -1,8 +1,11 @@
 ﻿import { GameObject } from './GameObject';
+import { Time } from './Time';
 
 export default class Unity {
     /** @type {typeof GameObject} */
     static GameObject = GameObject;
+    /** @type {typeof Time} */
+    static Time = Time;
     static internalLogs = false;
     static types = {
         int: "System.Int32",
