@@ -4,6 +4,7 @@ import { Rigidbody } from './Rigidbody';
 export class GameObject {
     #transform = null;
     #rigidbody = null;
+    #rootInstance = null;
 
     static keyGameObjects = {};
     static #lifeCycleCallbacks = {
@@ -23,8 +24,14 @@ export class GameObject {
      */
     static GetKeyGameObject(key){
         if(!GameObject.keyGameObjects.hasOwnProperty(key)) {
-            console.error(`GameObject with key '${key}' not found`);
-            return null;
+            const data = Unity.InvokeEvent("InstanceEvent:GetKeyGameObject", key);
+            if(data) {
+                GameObject.keyGameObjects[key] = new GameObject(key, data);
+            }
+            else {
+                console.error(`GameObject with key '${key}' not found`);
+                return null;
+            }
         }
         return GameObject.keyGameObjects[key];
     }
@@ -140,9 +147,10 @@ export class GameObject {
         }
     }
 
-    constructor(key, data) {
+    constructor(key, data, root = null) {
         this.key = key;
         this.name = data.name;
+        this.#rootInstance = root || this;
         this.#transform = new Transform(this);
         if(data.hasRigidbody) {
             this.#rigidbody = new Rigidbody(this);
@@ -201,7 +209,7 @@ export class GameObject {
         if(childData !== null) {
             const currentPath = this.hierarchyPath === "" ? this.key : this.hierarchyPath;
             childData.hierarchyPath = currentPath + "/" + childData.name;
-            return new GameObject(this.key, childData);
+            return new GameObject(this.key, childData, this.#rootInstance);
         }
         return null;
     }
@@ -245,6 +253,11 @@ export class GameObject {
 
     /**Only for internal library use*/
     _invokeGameObjectEvent(eventName, payload) {
+        if(GameObject.keyGameObjects[this.key] !== this.#rootInstance) {
+            console.error(`Attempted to invoke event '${eventName}' on a stale GameObject reference (Key: ${this.key}, Path: ${this.hierarchyPath}). This object has been destroyed or replaced.`);
+            return null;
+        }
+
         let payloadJson = payload;
         if(typeof payload === "object") payloadJson = JSON.stringify(payload);
         else if(typeof payload !== "string") payloadJson = payload.toString();
