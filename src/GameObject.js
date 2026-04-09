@@ -163,8 +163,7 @@ export class GameObject {
      * @returns {Rigidbody | null}
      */
     get rigidbody() {
-        const hasRigidbody = this._invokeGameObjectEvent("gameObject.hasComponent", "rigidbody");
-        if(hasRigidbody) {
+        if(this.HasComponent("Rigidbody")) {
             this.#rigidbody = new Rigidbody(this);
             return this.#rigidbody;
         }
@@ -230,6 +229,18 @@ export class GameObject {
      */
     Instantiate(prefabPath, position = { x: 0, y: 0, z: 0 }, rotation = { x: 0, y: 0, z: 0, w: 1 }) {
         this?._invokeGameObjectEvent("gameObject.instantiate", { prefabPath: prefabPath, position: position, rotation: rotation });
+    }
+    
+    HasComponent(componentName) {
+        return this?._invokeGameObjectEvent("gameObject.hasComponent", componentName);
+    }
+    
+    GetComponent(componentName) {
+        return this?._invokeGameObjectEvent("gameObject.getComponent", componentName);
+    }
+    
+    AddComponent(componentName) {
+        return this?._invokeGameObjectEvent("gameObject.addComponent", componentName);
     }
 
     /**Only for internal library use*/
