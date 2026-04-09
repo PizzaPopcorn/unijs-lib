@@ -1,6 +1,6 @@
 {
   "name": "@pizzapopcorn/unijs",
-  "version": "0.0.7",
+  "version": "0.0.6",
   "//": "PLEASE DO NOT MANUALLY MODIFY THE VERSION. Use the automatic bump workflow.",
   "description": "A seamless interop layer to control Unity WebGL builds from the browser's JavaScript context.",
   "license": "MIT",
@@ -26,6 +26,10 @@
   },
   "author": "Andres Urrutia <urrutiac.andres@gmail.com> (https://portfolio.sharpdevmx.com)",
   "type": "module",
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
   "devDependencies": {
     "@rollup/plugin-terser": "^0.4.4",
     "rollup": "^4.59.0"
