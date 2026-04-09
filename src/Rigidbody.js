@@ -2,15 +2,6 @@
     
     constructor(gameObject) {
         this.gameObject = gameObject;
-
-        // Make getters enumerable for better logging
-        Object.defineProperties(this, {
-            mass: { enumerable: true, get: () => this.mass },
-            useGravity: { enumerable: true, get: () => this.useGravity },
-            isKinematic: { enumerable: true, get: () => this.isKinematic },
-            linearDamping: { enumerable: true, get: () => this.linearDamping },
-            angularDamping: { enumerable: true, get: () => this.angularDamping }
-        });
     }
 
     /**

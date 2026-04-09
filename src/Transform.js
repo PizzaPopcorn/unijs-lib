@@ -2,21 +2,40 @@
     
     constructor(gameObject) {
         this.gameObject = gameObject;
+    }
 
-        // Make getters enumerable for better logging
-        Object.defineProperties(this, {
-            position: { enumerable: true, get: () => this.position },
-            rotation: { enumerable: true, get: () => this.rotation },
-            localScale: { enumerable: true, get: () => this.localScale }
-        });
+    /**
+     * Gets the GameObject's world position.
+     * @returns {object}
+     */
+    get position() {
+        return this.#tryInvokeGameObjectEvent("transform.getPosition", "");
+    }
+
+    /**
+     * Sets the GameObject's world position.
+     * @param {object} value
+     */
+    set position(value) {
+        this.#assertVector3(value);
+        this.#tryInvokeGameObjectEvent("transform.setPosition", value);
     }
 
     /**
      * Gets the GameObject's local position.
      * @returns {object}
      */
-    get position() {
-        return this.#tryInvokeGameObjectEvent("transform.getPosition", "");
+    get localPosition() {
+        return this.#tryInvokeGameObjectEvent("transform.getLocalPosition", "");
+    }
+
+    /**
+     * Sets the GameObject's local position.
+     * @param {object} value
+     */
+    set localPosition(value) {
+        this.#assertVector3(value);
+        this.#tryInvokeGameObjectEvent("transform.setLocalPosition", value);
     }
 
     /**
@@ -28,11 +47,61 @@
     }
 
     /**
+     * Sets the GameObject's local rotation.
+     * @param {object} value
+     */
+    set rotation(value) {
+        this.#assertQuaternion(value);
+        this.#tryInvokeGameObjectEvent("transform.setRotation", value);
+    }
+
+    /**
+     * Gets the GameObject's euler angles in degrees.
+     * @returns {object}
+     */
+    get eulerAngles() {
+        return this.#tryInvokeGameObjectEvent("transform.getEulerAngles", "");
+    }
+
+    /**
+     * Sets the GameObject's euler angles.
+     * @param {object} value
+     */
+    set eulerAngles(value) {
+        console.warn("[Unity] eulerAngles is read-only.");
+    }
+
+    /**
      * Gets the GameObject's local scale.
      * @returns {object}
      */
     get localScale() {
         return this.#tryInvokeGameObjectEvent("transform.getLocalScale", "");
+    }
+
+    /**
+     * Sets the GameObject's local scale.
+     * @param {object} value
+     */
+    set localScale(value) {
+        this.#assertVector3(value);
+        this.#tryInvokeGameObjectEvent("transform.setLocalScale", value);
+    }
+
+    /**
+     * Gets the GameObject's lossy scale (Read Only).
+     * @returns {object}
+     */
+    get lossyScale() {
+        return this.#tryInvokeGameObjectEvent("transform.getLossyScale", "");
+    }
+
+    /**
+     * Sets the GameObject's lossy scale.
+     * @param {object} value
+     */
+    set lossyScale(value) {
+        console.warn("[Unity] lossyScale is read-only.");
     }
 
     /** 
@@ -55,30 +124,23 @@
         this.#tryInvokeGameObjectEvent("transform.rotate", { x: x, y: y, z: z });
     }
 
-    /**
-     * Sets the GameObject's local scale to the specified values.
-     * @param {number} x
-     * @param {number} y
-     * @param {number} z
-     */
-    SetLocalScale(x, y, z) {
-        this.#tryInvokeGameObjectEvent("transform.setLocalScale", { x: x, y: y, z: z });
-    }
-
-    /**
-     * Sets the GameObject's local position to the specified values.
-     * @param {number} x
-     * @param {number} y
-     * @param {number} z
-     */
-    SetLocalPosition(x, y, z) {
-        this.#tryInvokeGameObjectEvent("transform.setLocalPosition", { x: x, y: y, z: z });
-    }
     
     #tryInvokeGameObjectEvent(eventName, payload) {
         if(!this.gameObject) {
             console.error("[Unity] The GameObject associated with this Transform is null");
         }
         return this.gameObject._invokeGameObjectEvent(eventName, payload);
+    }
+
+    #assertVector3(value) {
+        if (typeof value !== "object" || value === null || typeof value.x !== "number" || typeof value.y !== "number" || typeof value.z !== "number") {
+            throw new Error(`[Unity] Invalid Vector3: ${JSON.stringify(value)}`);
+        }
+    }
+
+    #assertQuaternion(value) {
+        if (typeof value !== "object" || value === null || typeof value.x !== "number" || typeof value.y !== "number" || typeof value.z !== "number" || typeof value.w !== "number") {
+            throw new Error(`[Unity] Invalid Quaternion: ${JSON.stringify(value)}`);
+        }
     }
 }

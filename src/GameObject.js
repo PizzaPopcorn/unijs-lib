@@ -152,10 +152,9 @@ export class GameObject {
     
     /**
      * Gets the Transform component of the GameObject.
-     * @returns {Transform | null}
+     * @returns {Transform}
      */
     get transform() {
-        // A GameObject HAS to have a transform
         return this.#transform;
     }
 
@@ -164,7 +163,6 @@ export class GameObject {
      * @returns {Rigidbody | null}
      */
     get rigidbody() {
-        if(this.#rigidbody) return this.#rigidbody;
         const hasRigidbody = this._invokeGameObjectEvent("gameObject.hasComponent", "rigidbody");
         if(hasRigidbody) {
             this.#rigidbody = new Rigidbody(this);
