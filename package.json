@@ -1,6 +1,6 @@
 {
   "name": "@pizzapopcorn/unijs",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "//": "PLEASE DO NOT MANUALLY MODIFY THE VERSION. Use the automatic bump workflow.",
   "description": "A seamless interop layer to control Unity WebGL builds from the browser's JavaScript context.",
   "license": "MIT",
