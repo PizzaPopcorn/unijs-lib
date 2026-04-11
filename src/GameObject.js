@@ -1,9 +1,11 @@
 ﻿import { Transform } from './Transform';
 import { Rigidbody } from './Rigidbody';
+import { Animator } from './Animator';
 
 export class GameObject {
     #transform = null;
     #rigidbody = null;
+    #animator = null;
     #rootInstance = null;
 
     static keyGameObjects = {};
@@ -155,6 +157,9 @@ export class GameObject {
         if(data.hasRigidbody) {
             this.#rigidbody = new Rigidbody(this);
         }
+        if(data.hasAnimator) {
+            this.#animator = new Animator(this);
+        }
         this.hierarchyPath = data.hasOwnProperty("hierarchyPath") ? data.hierarchyPath : "";
     }
     
@@ -171,9 +176,23 @@ export class GameObject {
      * @returns {Rigidbody | null}
      */
     get rigidbody() {
+        if(this.#rigidbody) return this.#rigidbody;
         if(this.HasComponent("Rigidbody")) {
             this.#rigidbody = new Rigidbody(this);
             return this.#rigidbody;
+        }
+        return null;
+    }
+
+    /**
+     * Gets the Animator component of the GameObject.
+     * @returns {Animator | null}
+     */
+    get animator() {
+        if(this.#animator) return this.#animator;
+        if(this.HasComponent("Animator")) {
+            this.#animator = new Animator(this);
+            return this.#animator;
         }
         return null;
     }
