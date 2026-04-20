@@ -74,6 +74,17 @@ export default class Unity {
     }
 
     /**
+     * Checks if a GameObject is still valid (not null and not destroyed in Unity).
+     * @param {GameObject} gameObject 
+     * @returns {boolean}
+     */
+    static IsValid(gameObject) {
+        if (gameObject === null || gameObject === undefined) return false;
+        if (!("isAlive" in gameObject)) return false;
+        return gameObject.isAlive;
+    }
+
+    /**
      * Invokes a global event that can be listened to by both Unity and JS.
      * An optional payload can be sent, and the event can also return anything.
      * @param {string} eventName

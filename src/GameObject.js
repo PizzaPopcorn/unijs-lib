@@ -7,6 +7,7 @@ export class GameObject {
     #rigidbody = null;
     #animator = null;
     #rootInstance = null;
+    #isAlive = true;
 
     static keyGameObjects = {};
     static #lifeCycleCallbacks = {
@@ -145,6 +146,7 @@ export class GameObject {
             }
         }
         if(event === "destroy") {
+            gameObject.#isAlive = false;
             delete GameObject.keyGameObjects[key];
         }
     }
@@ -153,6 +155,7 @@ export class GameObject {
         this.key = key;
         this.name = data.name;
         this.#rootInstance = root || this;
+        this.#isAlive = true;
         this.#transform = new Transform(this);
         if(data.hasRigidbody) {
             this.#rigidbody = new Rigidbody(this);
@@ -161,6 +164,22 @@ export class GameObject {
             this.#animator = new Animator(this);
         }
         this.hierarchyPath = data.hasOwnProperty("hierarchyPath") ? data.hierarchyPath : "";
+
+        // If this is a new tracked object (not just a sub-proxy of a key object)
+        // we make sure it's in the registry so it can be invalidated.
+        if (data.trackingId && !GameObject.keyGameObjects.hasOwnProperty(data.trackingId)) {
+            this.key = data.trackingId;
+            GameObject.keyGameObjects[data.trackingId] = this;
+            this.#rootInstance = this;
+        }
+    }
+
+    /**
+     * Returns true if the GameObject is still valid (not destroyed in Unity).
+     * @returns {boolean}
+     */
+    get isAlive() {
+        return this.#isAlive && (this.#rootInstance === this || this.#rootInstance.isAlive);
     }
     
     /**
@@ -272,6 +291,11 @@ export class GameObject {
 
     /**Only for internal library use*/
     _invokeGameObjectEvent(eventName, payload) {
+        if (!this.#isAlive) {
+            console.error(`Attempted to invoke event '${eventName}' on a destroyed or invalid GameObject (Key: ${this.key}, Path: ${this.hierarchyPath}).`);
+            return null;
+        }
+
         if(GameObject.keyGameObjects[this.key] !== this.#rootInstance) {
             console.error(`Attempted to invoke event '${eventName}' on a stale GameObject reference (Key: ${this.key}, Path: ${this.hierarchyPath}). This object has been destroyed or replaced.`);
             return null;
