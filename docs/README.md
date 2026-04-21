@@ -5,7 +5,6 @@ Welcome to the UniJS documentation. UniJS is a library designed to bridge Unity 
 ## Sections
 
 - [Getting Started](getting-started/setup.md) - Learn how to install and setup UniJS in your project.
-- [Unity Components](unity-side/components.md) - Documentation for Unity-side components like `JSInstance` and `JSKeyGameObject`.
 - [JavaScript API](api/README.md) - Detailed information about the available JavaScript classes and functions.
 - [Events System](js-library/events.md) - How to use the event-based communication between Unity and JavaScript.
 - [Advanced Usage](advanced/asset-bundles.md) - Using Asset Bundles and dynamic builds.
@@ -17,3 +16,6 @@ Welcome to the UniJS documentation. UniJS is a library designed to bridge Unity 
 - **Lifecycle Support**: Handle `Start`, `Awake`, and `OnEnable` directly from JavaScript.
 - **Event-Driven Architecture**: Easily trigger and listen to events from both sides.
 - **Dynamic Instances**: Embed your Unity game dynamically into your web app.
+
+## Unity Side
+- For information and instructions regarding the Unity package of UniJS, please visit the documentation at the [UniJS Unity Repo](https://github.com/UniJS/UniJS).

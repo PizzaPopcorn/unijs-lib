@@ -57,7 +57,7 @@ Destroys the GameObject in Unity.
 Returns true if the GameObject has the specified component.
 
 ### `GetComponent(componentName)`
-(Advanced) Returns raw data of the specified component.
+Gets and object mirroring the Unity component of the specified type (if implemented).
 
 ### `AddComponent(componentName)`
-Adds a component of the specified type to the GameObject.
+Adds a component of the specified type to the GameObject and returns it.

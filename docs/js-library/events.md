@@ -17,7 +17,7 @@ Unity.onEvent("MyEventName", (data) => {
 In Unity, you can trigger events that JS can listen to using the `JSEventHub`.
 
 ```csharp
-JSEventHub.Instance.TriggerEvent("MyEventName", "Hello from Unity!");
+JSInstance.InvokeEvent("MyEventName", "Hello from Unity!");
 ```
 
 ## Special Events

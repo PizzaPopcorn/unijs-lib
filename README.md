@@ -1,7 +1,7 @@
 # UniJS - WebGL Interop (Library)
 
 ## Prerequisites
-- Your Unity WebGL build must have the [Unity plugin package](https://github.com/PizzaPopcorn/unijs) installed and implemented (instructions provided in the README of that repo).
+- Your Unity WebGL build must have the [Unity package](https://github.com/PizzaPopcorn/unijs) installed and implemented (instructions provided in the README of that repo).
 - If you want to customize the library you need to have [Node.js](https://nodejs.org) installed.
 
 ## Installation
